@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>KHELARI Perfume — Final Single HTML</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:Arial;background:#f6f8fb;padding:20px}
+.page{display:none}
+.active{display:block}
+.container{max-width:800px;margin:auto;background:#fff;padding:20px;border-radius:10px}
+input,textarea{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:6px}
+button{padding:12px 16px;border:none;border-radius:6px;background:#0b74de;color:white;cursor:pointer;margin-top:10px}
+table{width:100%;border-collapse:collapse;margin-top:20px}
+th,td{padding:10px;border-bottom:1px solid #ddd}
+th{background:#0b74de;color:white}
+.danger{background:#e63946}
+.success{color:green;font-weight:bold;margin-top:10px}
+.note{color:#555;font-size:14px}
+.box{border:1px solid #ddd;padding:15px;border-radius:8px;margin-top:15px}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- ORDER PAGE -->
+<div id="orderPage" class="page active">
+<h2>KHELARI Perfume Order</h2>
+
+<input id="name" placeholder="Full Name *">
+<input id="phone" placeholder="Phone *">
+<textarea id="address" placeholder="Delivery Address *"></textarea>
+
+<input id="referral" placeholder="Referral Code (optional)">
+<input id="txn" placeholder="JazzCash Transaction ID *">
+
+<label>Upload Payment Screenshot *</label>
+<input id="screenshot" type="file" accept="image/*">
+
+<p class="note">
+JazzCash Account: <b>03232223378</b><br>
+Name: Muhammad Ishaq
+</p>
+
+<button onclick="sendOrder()">Send Order via WhatsApp</button>
+
+<p id="confirmMsg" class="success" style="display:none">
+🎉 Congratulations! Your order is confirmed
+</p>
+
+<button onclick="show('loginPage')">Admin Login</button>
+</div>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="page">
+<h2>Admin Login</h2>
+<input id="user" placeholder="Username">
+<input id="pass" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<button onclick="show('orderPage')">Back</button>
+<p id="err" style="color:red"></p>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPage" class="page">
+<h2>Referral Orders</h2>
+<p id="info"></p>
+
+<table id="tbl">
+<tr>
+<th>Name</th>
+<th>Phone</th>
+<th>Referral Code</th>
+<th>Action</th>
+</tr>
+</table>
+
+<div id="settings" class="box" style="display:none">
+<h3>Owner Settings (Change Login)</h3>
+
+<h4>Main Admin</h4>
+<input id="newAdminUser" placeholder="New Admin Username">
+<input id="newAdminPass" placeholder="New Admin Password">
+
+<h4>Content Creator</h4>
+<input id="newCreatorUser" placeholder="New Creator Username">
+<input id="newCreatorPass" placeholder="New Creator Password">
+
+<button onclick="saveCreds()">Save Changes</button>
+</div>
+
+<button onclick="logout()">Logout</button>
+</div>
+
+</div>
+
+<script>
+let creds = JSON.parse(localStorage.getItem("creds")) || {
+  admin:{user:"admin",pass:"admin123"},
+  creator:{user:"creator",pass:"creator999"}
+};
+localStorage.setItem("creds", JSON.stringify(creds));
+
+function show(id){
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+}
+
+function sendOrder(){
+let n=name.value.trim();
+let p=phone.value.trim();
+let a=address.value.trim();
+let r=referral.value.trim();
+let t=txn.value.trim();
+let s=screenshot.files.length;
+
+if(!n||!p||!a||!t||!s){
+alert("Please fill all required fields");
+return;
+}
+
+if(r){
+let orders=JSON.parse(localStorage.getItem("orders"))||[];
+orders.push({name:n,phone:p,ref:r});
+localStorage.setItem("orders",JSON.stringify(orders));
+}
+
+let msg =
+"KHELARI Perfume Order\n"+
+"Name: "+n+"\n"+
+"Phone: "+p+"\n"+
+"Address: "+a+"\n"+
+"Referral Code: "+(r||"None")+"\n"+
+"Transaction ID: "+t;
+
+window.open("https://wa.me/923232223378?text="+encodeURIComponent(msg),"_blank");
+document.getElementById("confirmMsg").style.display="block";
+}
+
+function login(){
+let c=JSON.parse(localStorage.getItem("creds"));
+if(user.value===c.admin.user && pass.value===c.admin.pass){
+localStorage.setItem("role","admin");
+load();
+document.getElementById("settings").style.display="block";
+show("adminPage");
+}
+else if(user.value===c.creator.user && pass.value===c.creator.pass){
+localStorage.setItem("role","creator");
+load();
+show("adminPage");
+}
+else{
+err.innerText="Invalid login";
+}
+}
+
+function load(){
+let role=localStorage.getItem("role");
+info.innerText = role==="admin" ? "Owner Access" : "Read Only";
+let orders=JSON.parse(localStorage.getItem("orders"))||
