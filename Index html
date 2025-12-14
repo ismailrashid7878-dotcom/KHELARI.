@@ -1,0 +1,43 @@
+<!DOCTYPE html><html lang="ur">
+<head>
+<meta charset="UTF-8">
+<title>KHELARI Perfume – Mobile App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{margin:0;font-family:Arial;background:#f4f6f9}
+.container{max-width:420px;margin:auto;background:#fff;min-height:100vh;padding:15px}
+h1{text-align:center;color:#0b74de}
+input,textarea{width:100%;padding:10px;margin-top:8px;border:1px solid #ccc;border-radius:6px}
+button{width:100%;padding:12px;margin-top:12px;background:#0b74de;color:#fff;border:none;border-radius:6px;font-size:16px}
+.note{font-size:14px;color:#444;margin-top:10px}
+.success{display:none;color:green;text-align:center;margin-top:15px;font-weight:bold}
+.video{margin-top:15px}
+</style>
+</head>
+<body>
+<div class="container"><h1>KHELARI Perfume</h1><div class="video">
+<video width="100%" controls>
+<source src="video.mp4" type="video/mp4">
+آپ کا موبائل ویڈیو سپورٹ نہیں کرتا
+</video>
+</div><input id="name" placeholder="نام *">
+<input id="phone" placeholder="فون نمبر *">
+<textarea id="address" placeholder="ایڈریس *"></textarea>
+<input id="ref" placeholder="ریفرل کوڈ (اختیاری)"><p class="note">
+JazzCash نمبر: <b>03232223378</b><br>
+نام: Muhammad Ishaq
+</p><button onclick="sendOrder()">WhatsApp پر آرڈر بھیجیں</button>
+
+<div id="ok" class="success">✔ آرڈر بھیج دیا گیا</div></div><script>
+function sendOrder(){
+let n=name.value.trim();
+let p=phone.value.trim();
+let a=address.value.trim();
+let r=ref.value.trim();
+if(!n||!p||!a){alert('تمام ضروری خانے پُر کریں');return;}
+let msg=`KHELARI Perfume Order%0Aنام: ${n}%0Aفون: ${p}%0Aایڈریس: ${a}%0Aریفرل: ${r||'نہیں'}`;
+window.open('https://wa.me/923232223378?text='+msg,'_blank');
+ok.style.display='block';
+}
+</script></body>
+</html>
